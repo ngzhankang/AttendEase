@@ -20,7 +20,29 @@
     <!-- Attendance overview -->
     <string name="attendance_fraction_format">%1$d / %2$d</string>
 
-    <!-- Stubs -->
-    <string name="coming_soon_calendar">Calendar — Coming Soon</string>
+    <!-- Calendar -->
+    <string name="prev_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+    <string name="tap_date_hint">Tap a date to see events</string>
+    <string name="no_events_today">No events on this day</string>
+
+    <!-- Lesson types -->
+    <string name="type_lecture">Lecture</string>
+    <string name="type_exam">Exam</string>
+    <string name="type_recess">Recess / Break</string>
+
+    <!-- Dot legend labels -->
+    <string name="legend_lecture">Lesson</string>
+    <string name="legend_exam">Exam</string>
+    <string name="legend_recess">Recess</string>
+
+    <!-- Profile stub -->
     <string name="coming_soon_profile">Profile — Coming Soon</string>
 </resources>
