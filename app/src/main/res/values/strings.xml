@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">AttendEase</string>
+
+    <!-- Bottom nav tab labels -->
+    <string name="home">Home</string>
+    <string name="calendar">Calendar</string>
+    <string name="profile">Profile</string>
+    <string name="lectures">Lectures</string>
+
+    <!-- Student Home -->
+    <string name="attendance_live_banner">Attendance Taking Now</string>
+    <string name="section_upcoming_lessons">Upcoming Lessons</string>
+    <string name="section_attendance_overview">Attendance Overview</string>
+    <string name="no_upcoming_lessons">No upcoming lessons</string>
+
+    <!-- Lesson item -->
+    <string name="lesson_number_format">Lesson %1$d / 48</string>
+    <string name="time_range_format">%1$s – %2$s</string>
+
+    <!-- Attendance overview -->
+    <string name="attendance_fraction_format">%1$d / %2$d</string>
+
+    <!-- Stubs -->
+    <string name="coming_soon_calendar">Calendar — Coming Soon</string>
+    <string name="coming_soon_profile">Profile — Coming Soon</string>
 </resources>
