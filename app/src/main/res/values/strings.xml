@@ -43,6 +43,36 @@
     <string name="legend_exam">Exam</string>
     <string name="legend_recess">Recess</string>
 
-    <!-- Profile stub -->
-    <string name="coming_soon_profile">Profile — Coming Soon</string>
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="label_student_id">Student ID</string>
+    <string name="label_staff_id">Staff ID</string>
+    <string name="label_can_id">CAN ID</string>
+    <string name="label_name">Name</string>
+    <string name="label_role">Role</string>
+    <string name="role_student">Student</string>
+    <string name="role_lecturer">Lecturer</string>
+    <string name="btn_change_password">Change Password</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="btn_logout">Logout</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Change password dialog -->
+    <string name="change_password_title">Change Password</string>
+    <string name="hint_current_password">Current Password</string>
+    <string name="hint_new_password">New Password</string>
+    <string name="hint_confirm_password">Confirm New Password</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_passwords_no_match">Passwords do not match</string>
+    <string name="error_current_password_wrong">Current password is incorrect</string>
+    <string name="password_changed_success">Password changed successfully</string>
+
+    <!-- Reset password dialog -->
+    <string name="reset_password_title">Reset Password</string>
+    <string name="reset_password_message">This will reset your password to the default value. Continue?</string>
+    <string name="password_reset_success">Password has been reset to the default</string>
+
+    <!-- Logout dialog -->
+    <string name="logout_title">Logout</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
 </resources>
