@@ -27,15 +27,15 @@ public class User {
     @NonNull
     public String role;
 
-    @ColumnInfo(name = "card_can_id")
-    public String cardCanId;
+    @ColumnInfo(name = "card_lid")
+    public String cardLid;
 
     public User(@NonNull String studentOrStaffId, @NonNull String name,
-                @NonNull String passwordHash, @NonNull String role, String cardCanId) {
+                @NonNull String passwordHash, @NonNull String role, String cardLid) {
         this.studentOrStaffId = studentOrStaffId;
         this.name = name;
         this.passwordHash = passwordHash;
         this.role = role;
-        this.cardCanId = cardCanId;
+        this.cardLid = cardLid;
     }
 }

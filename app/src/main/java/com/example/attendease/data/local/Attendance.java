@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "attendance",
         indices = {@Index(value = {"lesson_id", "student_id"}, unique = true)})
 public class Attendance {
-
     @PrimaryKey(autoGenerate = true)
     public long id;
 

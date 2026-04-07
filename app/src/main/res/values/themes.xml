@@ -1,11 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base app theme: Material3 with SUTD red -->
     <style name="Base.Theme.AttendEase" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorPrimaryContainer">@color/colorPrimaryDark</item>
         <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimation.AttendEase</item>
     </style>
 
     <style name="Theme.AttendEase" parent="Base.Theme.AttendEase" />
+
+    <!-- Splash activity: red window background eliminates white flash before layout inflates -->
+    <style name="Theme.AttendEase.Splash" parent="Theme.AttendEase">
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <!-- Slide-in/fade transitions for all activities -->
+    <style name="WindowAnimation.AttendEase" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
+    </style>
+
 </resources>

@@ -47,7 +47,7 @@
     <string name="profile_title">Profile</string>
     <string name="label_student_id">Student ID</string>
     <string name="label_staff_id">Staff ID</string>
-    <string name="label_can_id">CAN ID</string>
+    <string name="label_can_id">LID</string>
     <string name="label_name">Name</string>
     <string name="label_role">Role</string>
     <string name="role_student">Student</string>
@@ -75,4 +75,59 @@
     <!-- Logout dialog -->
     <string name="logout_title">Logout</string>
     <string name="logout_message">Are you sure you want to logout?</string>
+
+    <!-- Lecturer Home -->
+    <string name="section_today_schedule">Today\'s Schedule</string>
+    <string name="no_lessons_today">No lessons scheduled for today</string>
+    <string name="badge_live">LIVE</string>
+    <string name="lecturer_lesson_format">Lesson %1$d / 48</string>
+
+    <!-- Lecturer Lectures -->
+    <string name="section_my_modules">My Modules</string>
+    <string name="enrolled_count_format">%1$d students enrolled</string>
+    <string name="btn_start_attendance">Start Attendance</string>
+    <string name="btn_stop_attendance">Stop Attendance</string>
+    <string name="btn_add_manual">Add Manual</string>
+    <string name="status_done">✓</string>
+    <string name="status_live">●</string>
+    <string name="status_upcoming">◷</string>
+    <string name="attendance_count_format">Attended: %1$d</string>
+    <string name="stop_attendance_title">Stop Attendance</string>
+    <string name="stop_attendance_message">End the attendance session for this lesson?</string>
+
+    <!-- Manual attendance dialog -->
+    <string name="manual_attendance_title">Add Manual Attendance</string>
+    <string name="hint_student_id">Student ID</string>
+    <string name="btn_add">Add</string>
+    <string name="error_student_not_found">Student not found</string>
+    <string name="error_not_enrolled">Student not enrolled in this module</string>
+    <string name="error_already_attended">%1$s has already been marked present</string>
+    <string name="attendance_added_success">%1$s marked as attended</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="cd_expand_collapse">Expand or collapse module lessons</string>
+    <string name="cd_avatar">Profile avatar</string>
+    <string name="cd_live_banner">Live attendance banner</string>
+
+    <!-- Splash & Login -->
+    <string name="splash_logo">A</string>
+    <string name="splash_subtitle">SUTD ATTENDANCE SYSTEM</string>
+    <string name="label_login_as">Login as</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="error_invalid_credentials">Invalid ID or password. Please try again.</string>
+
+    <!-- NFC Scan Activity -->
+    <string name="nfc_scan_prompt">Hold NFC card near\nthe back of the phone</string>
+    <string name="btn_end_session">✕ End Session</string>
+    <string name="nfc_counter_format">Students scanned: %1$d / %2$d</string>
+    <string name="nfc_icon_idle">〜</string>
+    <string name="nfc_icon_success">✓</string>
+    <string name="nfc_icon_already">!</string>
+    <string name="nfc_icon_failed">✗</string>
+    <string name="nfc_msg_success">Attendance Registered</string>
+    <string name="nfc_msg_already">Already Registered</string>
+    <string name="nfc_msg_failed">Card Not Recognised</string>
+    <string name="nfc_unavailable">NFC is not available on this device</string>
+    <string name="nfc_disabled">Please enable NFC in Settings</string>
 </resources>
