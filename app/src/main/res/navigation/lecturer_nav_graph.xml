@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lecturer_nav_graph"
+    app:startDestination="@id/lecturerHomeFragment">
+
+    <fragment
+        android:id="@+id/lecturerHomeFragment"
+        android:name="com.example.attendease.ui.lecturer.LecturerHomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_lecturer_home" />
+
+    <fragment
+        android:id="@+id/lecturerLecturesFragment"
+        android:name="com.example.attendease.ui.lecturer.LecturerLecturesFragment"
+        android:label="@string/lectures"
+        tools:layout="@layout/fragment_lecturer_lectures" />
+
+    <fragment
+        android:id="@+id/lecturerProfileFragment"
+        android:name="com.example.attendease.ui.profile.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile" />
+
+</navigation>
