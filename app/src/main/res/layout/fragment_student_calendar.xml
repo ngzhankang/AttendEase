@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Month navigation header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/colorPrimary"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <ImageButton
+                android:id="@+id/btnPrevMonth"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_previous"
+                android:contentDescription="@string/prev_month"
+                android:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/tvMonthYear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnNextMonth"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_next"
+                android:contentDescription="@string/next_month"
+                android:tint="@color/white" />
+
+        </LinearLayout>
+
+        <!-- Day-of-week header row (Mon … Sun) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:background="@color/white">
+
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_mon" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_tue" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_wed" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_thu" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_fri" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_sat" android:textSize="12sp" android:textColor="#757575" />
+            <TextView android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:gravity="center"
+                android:text="@string/day_sun" android:textSize="12sp" android:textColor="#757575" />
+
+        </LinearLayout>
+
+        <!-- Calendar grid (42 cells, filled by RecyclerView + GridLayoutManager(7)) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:overScrollMode="never" />
+
+        <!-- Dot legend -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@color/white">
+
+            <View android:layout_width="8dp" android:layout_height="8dp"
+                android:background="@color/colorPrimary" android:layout_marginEnd="4dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/legend_lecture" android:textSize="11sp"
+                android:textColor="#424242" android:layout_marginEnd="16dp" />
+
+            <View android:layout_width="8dp" android:layout_height="8dp"
+                android:background="@color/colorSuccess" android:layout_marginEnd="4dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/legend_exam" android:textSize="11sp"
+                android:textColor="#424242" android:layout_marginEnd="16dp" />
+
+            <View android:layout_width="8dp" android:layout_height="8dp"
+                android:background="@color/colorRecess" android:layout_marginEnd="4dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/legend_recess" android:textSize="11sp"
+                android:textColor="#424242" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0" />
+
+        <!-- Day detail panel -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvSelectedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/tap_date_hint"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvNoEvents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_events_today"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDayLessons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
