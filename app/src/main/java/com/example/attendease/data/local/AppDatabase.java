@@ -91,13 +91,13 @@ public abstract class AppDatabase extends RoomDatabase {
             "1006002", "Priya Sharma", pwdHash, Constants.ROLE_STUDENT, "22AA3B0000201242");
         exec(db,
             "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006003", "Marcus Ng", pwdHash, Constants.ROLE_STUDENT, "33BB4C0000301343");
+            "1006003", "Marcus Lee", pwdHash, Constants.ROLE_STUDENT, "33BB4C0000301343");
         exec(db,
             "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
             "1006004", "Aisha Rahman", pwdHash, Constants.ROLE_STUDENT, "44CC5D0000401444");
         exec(db,
             "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006005", "Raj Patel", pwdHash, Constants.ROLE_STUDENT, "55DD6E0000501545");
+            "1006005", "Daniel Koh", pwdHash, Constants.ROLE_STUDENT, "55DD6E0000501545");
 
         // --- Modules ---
         exec(db,

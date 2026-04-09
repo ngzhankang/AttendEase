@@ -17,6 +17,7 @@ import com.example.attendease.util.Constants;
 
 public class SplashActivity extends AppCompatActivity {
 
+    // delay a 1.5s in the very beginning loading page (splashactivity) before app routes to login
     private static final int SPLASH_DELAY_MS = 1500;
 
     @Override
