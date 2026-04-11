@@ -1,32 +1,40 @@
 package com.example.attendease.ui.lecturer;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.attendease.R;
+import com.example.attendease.data.local.AppDatabase;
 import com.example.attendease.data.local.Module;
 import com.example.attendease.data.model.LessonWithAttendanceCount;
 import com.example.attendease.databinding.DialogManualAttendanceBinding;
 import com.example.attendease.databinding.FragmentLecturerLecturesBinding;
 import com.example.attendease.ui.nfc.NfcScanActivity;
 import com.example.attendease.util.DateUtils;
+import com.example.attendease.util.ExportUtils;
 import com.example.attendease.viewmodel.LecturerViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +56,8 @@ public class LecturerLecturesFragment extends Fragment {
     // Track observed LiveDatas to avoid duplicate observers
     private final Map<Long, Observer<List<LessonWithAttendanceCount>>> lessonObservers = new HashMap<>();
 
+    private AppDatabase db;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,6 +70,8 @@ public class LecturerLecturesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        db = AppDatabase.getInstance(requireContext());
 
         viewModel = new ViewModelProvider(requireActivity()).get(LecturerViewModel.class);
 
@@ -92,6 +104,21 @@ public class LecturerLecturesFragment extends Fragment {
             @Override
             public void onAddManual(LessonWithAttendanceCount item, long moduleId) {
                 showManualAttendanceDialog(item.lesson.lessonId, moduleId);
+            }
+
+            @Override
+            public void onViewAttendance(LessonWithAttendanceCount item) {
+                showAttendanceList(item);
+            }
+
+            @Override
+            public void onViewOverallAttendance(Module module) {
+                showOverallAttendanceDialog(module);
+            }
+
+            @Override
+            public void onExportAttendance(Module module) {
+                exportModuleAttendance(module);
             }
         }, DateUtils.today());
 
@@ -214,6 +241,53 @@ public class LecturerLecturesFragment extends Fragment {
         dialog.show();
     }
 
+    private void showOverallAttendanceDialog(Module module) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_overall_attendance, null);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.rvOverallAttendance);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        OverallAttendanceAdapter adapter = new OverallAttendanceAdapter();
+        recyclerView.setAdapter(adapter);
+
+        AlertDialog dialog = builder.setView(dialogView)
+                .setTitle("Overall Attendance - " + module.moduleName)
+                .setPositiveButton("Close", null)
+                .create();
+
+        viewModel.getOverallAttendanceForModule(module.moduleId)
+                .observe(getViewLifecycleOwner(), students -> {
+                    if (students != null) {
+                        adapter.submitList(students);
+                    }
+                });
+
+        dialog.show();
+    }
+
+    private void exportModuleAttendance(Module module) {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            File csv = ExportUtils.exportModuleAttendance(requireContext(), db, module.moduleId);
+            if (csv != null && csv.exists()) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    // Share the file
+                    Uri uri = FileProvider.getUriForFile(requireContext(),
+                            requireContext().getPackageName() + ".fileprovider",
+                            csv);
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("text/csv");
+                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                    share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(share, "Export Attendance"));
+                });
+            } else {
+                new Handler(Looper.getMainLooper()).post(() ->
+                        Toast.makeText(requireContext(), "Export failed", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
     private void showSnackbar(String msg) {
         if (binding != null) Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
     }
@@ -222,5 +296,29 @@ public class LecturerLecturesFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void showAttendanceList(LessonWithAttendanceCount lesson) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_attendance_list, null);
+        RecyclerView recyclerView = dialogView.findViewById(R.id.rvAttendanceList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        AttendanceListAdapter adapter = new AttendanceListAdapter();
+        recyclerView.setAdapter(adapter);
+
+        AlertDialog dialog = builder.setView(dialogView)
+                .setTitle("Attendance for Lesson " + lesson.lesson.lessonNumber)
+                .setPositiveButton("Close", null)
+                .create();
+
+        viewModel.getAttendanceForLesson(lesson.lesson.lessonId)
+                .observe(getViewLifecycleOwner(), students -> {
+                    if (students != null) {
+                        adapter.submitList(students);
+                    }
+                });
+
+        dialog.show();
     }
 }
