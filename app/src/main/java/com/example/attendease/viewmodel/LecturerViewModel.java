@@ -16,6 +16,8 @@ import com.example.attendease.data.local.Module;
 import com.example.attendease.data.local.User;
 import com.example.attendease.data.model.LecturerScheduleItem;
 import com.example.attendease.data.model.LessonWithAttendanceCount;
+import com.example.attendease.data.model.StudentAttendanceStatus;
+import com.example.attendease.data.model.StudentAttendanceSummary;
 import com.example.attendease.util.Constants;
 import com.example.attendease.util.DateUtils;
 
@@ -36,6 +38,7 @@ public class LecturerViewModel extends AndroidViewModel {
         super(app);
         SharedPreferences prefs = app.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
         lecturerId = prefs.getString(Constants.KEY_LOGGED_IN_USER_ID, "1000001");
+
         db = AppDatabase.getInstance(app);
         todaySchedule = db.lessonDao().getTodayLessonsForLecturer(lecturerId, DateUtils.today());
         modules = db.moduleDao().getModulesForLecturer(lecturerId);
@@ -93,5 +96,13 @@ public class LecturerViewModel extends AndroidViewModel {
         void onAlreadyAttended(String studentName);
         void onNotEnrolled();
         void onError(String message);
+    }
+
+    public LiveData<List<StudentAttendanceStatus>> getAttendanceForLesson(long lessonId) {
+        return db.attendanceDao().getAttendanceForLesson(lessonId);
+    }
+
+    public LiveData<List<StudentAttendanceSummary>> getOverallAttendanceForModule(long moduleId) {
+        return db.attendanceDao().getOverallAttendanceForModule(moduleId);
     }
 }
