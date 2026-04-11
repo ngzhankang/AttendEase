@@ -45,6 +45,9 @@ public class ModuleLessonsAdapter extends RecyclerView.Adapter<RecyclerView.View
         void onStartAttendance(LessonWithAttendanceCount item);
         void onStopAttendance(LessonWithAttendanceCount item);
         void onAddManual(LessonWithAttendanceCount item, long moduleId);
+        void onViewAttendance(LessonWithAttendanceCount item);
+        void onViewOverallAttendance(Module module);
+        void onExportAttendance(Module module);
     }
 
     private final List<Object> items = new ArrayList<>();  // ModuleItem | LessonWithAttendanceCount
@@ -111,6 +114,19 @@ public class ModuleLessonsAdapter extends RecyclerView.Adapter<RecyclerView.View
             b.tvEnrolledCount.setText(
                     ctx.getString(R.string.enrolled_count_format, item.enrolledCount));
             b.tvChevron.setText(item.expanded ? "▲" : "▼");
+
+            b.btnOverallAttendance.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onViewOverallAttendance(item.module);
+                }
+            });
+
+            b.btnExport.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onExportAttendance(item.module);
+                }
+            });
+
             b.getRoot().setOnClickListener(v -> listener.onModuleHeaderClicked(item.module));
         }
     }
@@ -166,6 +182,12 @@ public class ModuleLessonsAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
 
             b.btnAddManual.setOnClickListener(v -> listener.onAddManual(item, moduleId));
+
+            b.btnViewAttendance.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onViewAttendance(item);
+                }
+            });
         }
     }
 }
