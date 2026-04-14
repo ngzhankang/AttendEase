@@ -47,18 +47,6 @@ public interface AttendanceDao {
             "ORDER BY u.name")
     LiveData<List<StudentAttendanceSummary>> getOverallAttendanceForModule(long moduleId);
 
-    @Query("SELECT u.student_or_staff_id AS studentId, u.name, " +
-            "COUNT(a.lesson_id) AS attended, " +
-            "(SELECT COUNT(*) FROM lessons l WHERE l.module_id = :moduleId) AS totalLessons " +
-            "FROM users u " +
-            "INNER JOIN enrollments e ON u.student_or_staff_id = e.student_id " +
-            "LEFT JOIN attendance a ON a.student_id = u.student_or_staff_id " +
-            "   AND a.lesson_id IN (SELECT lessonId FROM lessons WHERE module_id = :moduleId) " +
-            "WHERE e.module_id = :moduleId AND u.role = 'STUDENT' " +
-            "GROUP BY u.student_or_staff_id " +
-            "ORDER BY u.name")
-    LiveData<List<StudentAttendanceSummary>> getOverallAttendanceForModuleSync(long moduleId);
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Attendance attendance);
 }
