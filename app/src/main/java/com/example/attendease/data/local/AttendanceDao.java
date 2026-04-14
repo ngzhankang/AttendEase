@@ -57,7 +57,7 @@ public interface AttendanceDao {
             "WHERE e.module_id = :moduleId AND u.role = 'STUDENT' " +
             "GROUP BY u.student_or_staff_id " +
             "ORDER BY u.name")
-    List<StudentAttendanceSummary> getOverallAttendanceForModuleSync(long moduleId);
+    LiveData<List<StudentAttendanceSummary>> getOverallAttendanceForModuleSync(long moduleId);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Attendance attendance);
