@@ -13,7 +13,7 @@ Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Naviga
 Open the [Appetize demo](https://appetize.io/app/b_wpwek676k67podfwefczyucynu) and press play. It streams the app from an emulator, so there's nothing to install. Browser sessions are short, and the demo can be unavailable for the rest of the month if its free minutes run out.
 
 1. Log in as lecturer `1000001` with password `password`.
-2. Open **Lectures**, expand **50.001 Information Systems**, scroll to today's lesson near the bottom of the list, and tap **Start Attendance**.
+2. Open **Lectures** and expand **50.001 Information Systems**. The list jumps to today's lesson; tap **Start Attendance**.
 3. Tap **Simulate card tap** and pick a student to see the scan results, or pick an unregistered card to try linking a card.
 
 ### On an Android phone

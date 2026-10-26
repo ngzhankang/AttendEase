@@ -55,6 +55,8 @@ public class LecturerLecturesFragment extends Fragment {
     private final Map<Long, Integer> enrolledCounts = new HashMap<>();
     // Track observed LiveDatas to avoid duplicate observers
     private final Map<Long, Observer<List<LessonWithAttendanceCount>>> lessonObservers = new HashMap<>();
+    // Module just expanded by the user: scroll to its next lesson once the lessons are listed
+    private long pendingScrollModuleId = -1L;
 
     private AppDatabase db;
 
@@ -149,6 +151,7 @@ public class LecturerLecturesFragment extends Fragment {
             rebuildList();
         } else {
             expandedModuleIds.add(moduleId);
+            pendingScrollModuleId = moduleId;
             if (!lessonObservers.containsKey(moduleId)) {
                 Observer<List<LessonWithAttendanceCount>> obs = lessons -> {
                     loadedLessons.put(moduleId, lessons);
@@ -165,6 +168,8 @@ public class LecturerLecturesFragment extends Fragment {
     private void rebuildList() {
         List<Object> flatItems = new ArrayList<>();
         List<Long> moduleIds = new ArrayList<>();
+        int scrollTarget = -1;
+        String today = DateUtils.today();
 
         for (Module m : currentModules) {
             boolean expanded = expandedModuleIds.contains(m.moduleId);
@@ -177,6 +182,11 @@ public class LecturerLecturesFragment extends Fragment {
                 List<LessonWithAttendanceCount> lessons = loadedLessons.get(m.moduleId);
                 if (lessons != null) {
                     for (LessonWithAttendanceCount lesson : lessons) {
+                        // First lesson from today onwards, so lecturers skip past finished ones
+                        if (m.moduleId == pendingScrollModuleId && scrollTarget == -1
+                                && lesson.lesson.date.compareTo(today) >= 0) {
+                            scrollTarget = flatItems.size();
+                        }
                         flatItems.add(lesson);
                         moduleIds.add(m.moduleId);
                     }
@@ -185,6 +195,12 @@ public class LecturerLecturesFragment extends Fragment {
         }
 
         adapter.submitItems(flatItems, moduleIds);
+
+        if (scrollTarget != -1 && binding != null) {
+            pendingScrollModuleId = -1L;
+            ((LinearLayoutManager) binding.rvModuleLessons.getLayoutManager())
+                    .scrollToPositionWithOffset(scrollTarget, 0);
+        }
     }
 
     private void showManualAttendanceDialog(long lessonId, long moduleId) {
