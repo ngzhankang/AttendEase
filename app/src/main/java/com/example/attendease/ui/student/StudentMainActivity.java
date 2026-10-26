@@ -9,6 +9,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.attendease.R;
 import com.example.attendease.databinding.ActivityStudentMainBinding;
+import com.example.attendease.util.SystemBarUtils;
 
 public class StudentMainActivity extends AppCompatActivity {
 
@@ -17,8 +18,10 @@ public class StudentMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarUtils.enableEdgeToEdge(this);
         binding = ActivityStudentMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        SystemBarUtils.matchStatusBarHeight(binding.statusBarBackground);
 
         // FragmentContainerView requires finding the NavController via the fragment manager,
         // NOT via Navigation.findNavController(activity, viewId) which crashes with FCView.

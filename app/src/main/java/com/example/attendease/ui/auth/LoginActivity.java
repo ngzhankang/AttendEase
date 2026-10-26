@@ -17,6 +17,7 @@ import com.example.attendease.R;
 import com.example.attendease.data.local.AppDatabase;
 import com.example.attendease.data.local.User;
 import com.example.attendease.databinding.ActivityLoginBinding;
+import com.example.attendease.util.SystemBarUtils;
 import com.example.attendease.ui.lecturer.LecturerMainActivity;
 import com.example.attendease.ui.student.StudentMainActivity;
 import com.example.attendease.util.Constants;
@@ -32,8 +33,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarUtils.enableEdgeToEdge(this);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        SystemBarUtils.padBottomForKeyboard(binding.getRoot());
 
         // Student is the default selected role
         binding.toggleRole.check(R.id.btnRoleStudent);

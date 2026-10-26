@@ -53,7 +53,7 @@ Open the [Appetize demo](https://appetize.io/app/b_wpwek676k67podfwefczyucynu) a
 | Lecturer | `1000001` (Dr. Alice Tan), `1000002` (Dr. Bob Lim) |
 | Student | `1006001` to `1006005` |
 
-The demo data is generated on first launch around the current date, so the term is always in week 15 and lecturer `1000001` always has a 50.001 lesson today. All names and IDs are fictional.
+The demo timetable is built around the current date, so the term is in week 15 and lecturer `1000001` has a 50.001 lesson today. If you open the app on a later day with no 50.001 lesson, the timetable is rebuilt around that day. Accounts and linked cards are kept, and the demo attendance is regenerated. All names and IDs are fictional.
 
 ### Try NFC attendance with your own card
 

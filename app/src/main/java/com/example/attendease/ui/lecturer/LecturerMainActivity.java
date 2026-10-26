@@ -8,6 +8,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.attendease.databinding.ActivityLecturerMainBinding;
+import com.example.attendease.util.SystemBarUtils;
 
 public class LecturerMainActivity extends AppCompatActivity {
 
@@ -16,8 +17,10 @@ public class LecturerMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarUtils.enableEdgeToEdge(this);
         binding = ActivityLecturerMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        SystemBarUtils.matchStatusBarHeight(binding.statusBarBackground);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(binding.navHostFragment.getId());

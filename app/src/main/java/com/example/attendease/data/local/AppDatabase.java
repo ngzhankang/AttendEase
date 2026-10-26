@@ -13,8 +13,10 @@ import com.example.attendease.util.Constants;
 import com.example.attendease.util.HashUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 //  basically you instantiate a local database in the phone for persistent data
@@ -50,6 +52,12 @@ public abstract class AppDatabase extends RoomDatabase {
                             // re-enter getDatabase() and throw IllegalStateException.
                             seedDatabase(db);
                         }
+
+                        @Override
+                        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                            super.onOpen(db);
+                            refreshTimetableIfStale(db);
+                        }
                     }).build();
                 }
             }
@@ -71,11 +79,18 @@ public abstract class AppDatabase extends RoomDatabase {
         db.execSQL(sql, args);
     }
 
+    private static List<String> queryStrings(SupportSQLiteDatabase db, String sql, Object... args) {
+        List<String> values = new ArrayList<>();
+        Cursor c = db.query(sql, args);
+        while (c.moveToNext()) values.add(c.getString(0));
+        c.close();
+        return values;
+    }
+
     // ── Seed data ────────────────────────────────────────────────────
 
     private static void seedDatabase(SupportSQLiteDatabase db) {
         String pwdHash = HashUtils.sha256("password");
-        long now = System.currentTimeMillis();
 
         // --- Users ---
         // Fictional demo accounts. Students start with no card linked: the lecturer
@@ -121,21 +136,36 @@ public abstract class AppDatabase extends RoomDatabase {
         for (String sid : partStudents) {
             exec(db, "INSERT INTO enrollments (student_id,module_id) VALUES (?,?)", sid, moduleId3);
         }
-        // --- Lessons: 48 per module (3 per week × 16 weeks) ---
-        // The term is anchored to the install date so the demo always looks current:
+        seedTimetable(db);
+    }
+
+    /**
+     * Demo timetable: 48 lessons per module (3 per week × 16 weeks), plus demo
+     * attendance for lessons already past. Reads the modules and enrollments
+     * back from the database so it can be rebuilt on its own.
+     */
+    private static void seedTimetable(SupportSQLiteDatabase db) {
+        long now = System.currentTimeMillis();
+        List<String> moduleIds = queryStrings(db, "SELECT moduleId FROM modules ORDER BY moduleId");
+        if (moduleIds.size() < 3) return;
+        long moduleId1 = Long.parseLong(moduleIds.get(0));
+        long moduleId2 = Long.parseLong(moduleIds.get(1));
+        long moduleId3 = Long.parseLong(moduleIds.get(2));
+        String enrolledSql = "SELECT student_id FROM enrollments WHERE module_id = ? ORDER BY student_id";
+        // The term is anchored to today so the demo always looks current:
         // week 1 starts 14 Mondays before this week, which puts today in week 15,
         // late enough that the attendance overview shows a spread of colours.
         Calendar today = Calendar.getInstance();
         int todayOffset = (today.get(Calendar.DAY_OF_WEEK) + 5) % 7;  // days since Monday
         Calendar termStart = (Calendar) today.clone();
         termStart.add(Calendar.DAY_OF_YEAR, -todayOffset - 14 * 7);
-        // 50.001 always has a lesson on install day, so a visitor can start
+        // 50.001 always has a lesson today, so a visitor can start
         // an attendance session straight away.
         int[] mod1Days = sortedDays(todayOffset, (todayOffset + 2) % 7, (todayOffset + 4) % 7);
         Object[][] modCfg = {
-            {moduleId1, "10:00", "12:00", "LT1",     mod1Days,             allStudents},
-            {moduleId2, "14:00", "16:00", "LT2",     new int[]{0, 2, 3},  allStudents},  // Mon, Wed, Thu
-            {moduleId3, "09:00", "10:30", "ESC Lab", new int[]{1, 3, 4},  partStudents}  // Tue, Thu, Fri
+            {moduleId1, "10:00", "12:00", "LT1",     mod1Days},
+            {moduleId2, "14:00", "16:00", "LT2",     new int[]{0, 2, 3}},  // Mon, Wed, Thu
+            {moduleId3, "09:00", "10:30", "ESC Lab", new int[]{1, 3, 4}}   // Tue, Thu, Fri
         };
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String todayStr = sdf.format(today.getTime());
@@ -145,7 +175,7 @@ public abstract class AppDatabase extends RoomDatabase {
             String end     = (String) cfg[2];
             String venue   = (String) cfg[3];
             int[] days     = (int[])  cfg[4];
-            String[] enrolled = (String[]) cfg[5];
+            String[] enrolled = queryStrings(db, enrolledSql, modId).toArray(new String[0]);
             Calendar weekStart = (Calendar) termStart.clone();
             int lessonNum = 1;
             for (int week = 1; week <= 16; week++) {
@@ -171,6 +201,29 @@ public abstract class AppDatabase extends RoomDatabase {
                 }
                 weekStart.add(Calendar.WEEK_OF_YEAR, 1);
             }
+        }
+    }
+
+    /**
+     * The timetable is generated around the day it was seeded, so after a few
+     * days the demo has no lesson to start attendance on. When 50.001 has no
+     * lesson today, rebuild the lessons around today. Accounts, enrollments and
+     * linked cards are kept; demo attendance is regenerated.
+     */
+    private static void refreshTimetableIfStale(SupportSQLiteDatabase db) {
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Calendar.getInstance().getTime());
+        List<String> todayLessons = queryStrings(db,
+            "SELECT lessonId FROM lessons WHERE date = ? " +
+            "AND module_id = (SELECT MIN(moduleId) FROM modules)", today);
+        if (!todayLessons.isEmpty()) return;
+        db.beginTransaction();
+        try {
+            exec(db, "DELETE FROM attendance");
+            exec(db, "DELETE FROM lessons");
+            seedTimetable(db);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
         }
     }
 

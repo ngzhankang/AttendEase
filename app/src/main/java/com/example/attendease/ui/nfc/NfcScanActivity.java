@@ -23,6 +23,7 @@ import com.example.attendease.data.local.Attendance;
 import com.example.attendease.data.local.User;
 import com.example.attendease.databinding.ActivityNfcScanBinding;
 import com.example.attendease.util.NfcUtils;
+import com.example.attendease.util.SystemBarUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Collections;
@@ -69,8 +70,10 @@ public class NfcScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarUtils.enableEdgeToEdge(this);
         binding = ActivityNfcScanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        SystemBarUtils.padForSystemBars(binding.rootLayout);
 
         lessonId = getIntent().getLongExtra(EXTRA_LESSON_ID, -1L);
         moduleId = getIntent().getLongExtra(EXTRA_MODULE_ID, -1L);

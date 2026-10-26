@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.attendease.R;
 import com.example.attendease.databinding.ActivitySplashBinding;
+import com.example.attendease.util.SystemBarUtils;
 import com.example.attendease.ui.lecturer.LecturerMainActivity;
 import com.example.attendease.ui.student.StudentMainActivity;
 import com.example.attendease.util.Constants;
@@ -23,6 +24,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarUtils.enableEdgeToEdge(this);
         ActivitySplashBinding binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

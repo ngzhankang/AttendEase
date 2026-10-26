@@ -6,7 +6,6 @@
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorPrimaryContainer">@color/colorPrimaryDark</item>
         <item name="colorOnPrimaryContainer">@color/white</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimation.AttendEase</item>
     </style>
 
