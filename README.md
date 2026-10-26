@@ -8,8 +8,11 @@ Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Naviga
 
 ## Screenshots
 
-<!-- Demo video: upload the recording to a GitHub issue or YouTube and replace this comment with the link, e.g.
-**[Watch the demo video](https://...)**, showing a real card being scanned on a phone. -->
+<p align="center">
+  <img src="docs/screenshots/nfc-scan.gif" width="260" alt="A real card tapped on a Samsung phone: Card Not Recognised, linking it to a student, Attendance Registered, then Already Registered">
+</p>
+<p align="center"><em>A real NFC card on a Galaxy Note20 Ultra: unknown card, link it to a student, registered, then already registered.</em><br>
+<a href="docs/video/AttendEase-demo.mp4">Watch the full 1-minute demo video</a></p>
 
 ### Students
 
