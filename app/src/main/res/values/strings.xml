@@ -128,9 +128,11 @@
     <string name="nfc_msg_success">Attendance Registered</string>
     <string name="nfc_msg_already">Already Registered</string>
     <string name="nfc_msg_failed">Card Not Recognised</string>
-    <string name="nfc_unavailable">NFC is not available on this device</string>
     <string name="nfc_disabled">Please enable NFC in Settings</string>
     <string name="btn_link_card">Link this card to a student</string>
     <string name="link_card_title">Link card to student</string>
     <string name="link_card_item_format">%1$s (%2$s)</string>
+    <string name="btn_simulate_scan">Simulate card tap</string>
+    <string name="simulate_scan_title">Whose card is tapped?</string>
+    <string name="simulate_unknown_card">An unregistered card</string>
 </resources>

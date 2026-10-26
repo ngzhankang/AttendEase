@@ -30,6 +30,10 @@ You need an NFC-enabled phone and any NFC card, such as a transit card, student 
 
 The card's ID is stored only in the app's local database on your phone. Bank cards and phone wallets show a different ID on every tap, so they can't be linked.
 
+### No NFC?
+
+On a device without NFC, such as an emulator, the scanner shows a **Simulate card tap** button. Choose a student to tap their card, or choose an unregistered card to try the linking flow. Simulated taps go through the same code as real ones.
+
 ## Features
 
 ### Students
@@ -51,7 +55,7 @@ When a lecturer starts a session, a full-screen scanner reads each card's UID an
 | Already registered | Amber, student name |
 | Card not recognised | Red, ✗ |
 
-If an unknown card is scanned, the lecturer can link it to an enrolled student who doesn't have a card yet. A counter shows how many students have scanned. Opening and closing a session flips the lesson's active flag, which is what shows or hides the live banner on students' phones.
+If an unknown card is scanned, the lecturer can link it to an enrolled student who doesn't have a card yet. A counter shows how many students have scanned. Devices without NFC get a button that simulates card taps. Opening and closing a session flips the lesson's active flag, which is what shows or hides the live banner on students' phones.
 
 ## Architecture
 

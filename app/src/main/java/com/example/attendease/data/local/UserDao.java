@@ -31,6 +31,12 @@ public interface UserDao {
            "ORDER BY u.name")
     List<User> getUnlinkedStudentsForModule(long moduleId);
 
+    @Query("SELECT u.* FROM users u " +
+           "INNER JOIN enrollments e ON u.student_or_staff_id = e.student_id " +
+           "WHERE e.module_id = :moduleId AND u.role = 'STUDENT' " +
+           "ORDER BY u.name")
+    List<User> getStudentsForModule(long moduleId);
+
     @Query("UPDATE users SET card_lid = :lid WHERE student_or_staff_id = :studentId")
     void linkCard(String studentId, String lid);
 

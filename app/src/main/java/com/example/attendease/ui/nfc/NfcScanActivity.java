@@ -41,6 +41,9 @@ public class NfcScanActivity extends AppCompatActivity {
     private static final int HOLD_FAILED   = 2000;
     private static final int HOLD_LINKABLE = 8000;   // failed, with the link button showing
 
+    /** Prefix for card IDs made up by the simulate button; real UIDs are hex only. */
+    private static final String SIMULATED_UID_PREFIX = "SIM-";
+
     private ActivityNfcScanBinding binding;
     private AppDatabase db;
     private NfcAdapter nfcAdapter;
@@ -77,7 +80,9 @@ public class NfcScanActivity extends AppCompatActivity {
         nfcAdapter = nfcManager != null ? nfcManager.getDefaultAdapter() : null;
 
         if (nfcAdapter == null) {
-            Toast.makeText(this, R.string.nfc_unavailable, Toast.LENGTH_LONG).show();
+            // No NFC hardware (e.g. an emulator in a browser demo): offer simulated taps instead
+            binding.btnSimulateScan.setVisibility(View.VISIBLE);
+            binding.btnSimulateScan.setOnClickListener(v -> showSimulateScanDialog());
         }
 
         binding.btnEndSession.setOnClickListener(v -> confirmEndSession());
@@ -213,6 +218,52 @@ public class NfcScanActivity extends AppCompatActivity {
                 owner = student;
             }
             registerAttendance(owner);
+        });
+    }
+
+    // ── Simulated taps ───────────────────────────────────────────────
+
+    /** Lets the lecturer pick whose card to "tap", then runs it through handleNfcTag. */
+    private void showSimulateScanDialog() {
+        if (processingTag) return;
+        executor.execute(() -> {
+            List<User> students = moduleId != -1L
+                    ? db.userDao().getStudentsForModule(moduleId)
+                    : Collections.emptyList();
+            handler.post(() -> {
+                String[] labels = new String[students.size() + 1];
+                for (int i = 0; i < students.size(); i++) {
+                    User u = students.get(i);
+                    labels[i] = getString(R.string.link_card_item_format, u.name, u.studentOrStaffId);
+                }
+                labels[students.size()] = getString(R.string.simulate_unknown_card);
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.simulate_scan_title)
+                        .setItems(labels, (d, which) -> {
+                            if (which < students.size()) {
+                                simulateStudentTap(students.get(which));
+                            } else {
+                                handleNfcTag(SIMULATED_UID_PREFIX + System.currentTimeMillis());
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
+            });
+        });
+    }
+
+    /** Taps the student's linked card, giving them a simulated one first if they have none. */
+    private void simulateStudentTap(User student) {
+        if (processingTag) return;
+        processingTag = true;
+        executor.execute(() -> {
+            String uid = student.cardLid;
+            if (uid == null) {
+                uid = SIMULATED_UID_PREFIX + student.studentOrStaffId;
+                db.userDao().linkCard(student.studentOrStaffId, uid);
+            }
+            String tapped = uid;
+            handler.post(() -> handleNfcTag(tapped));
         });
     }
 
