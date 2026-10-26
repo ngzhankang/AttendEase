@@ -4,9 +4,19 @@ An Android attendance app for SUTD. Students tap their NFC student cards on the 
 
 Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Navigation Component. All data is stored on the device, so no backend or account setup is needed.
 
-**[Download the latest APK](https://github.com/ngzhankang/AttendEase/releases/latest)**
+**[Try it in your browser](https://appetize.io/app/b_wpwek676k67podfwefczyucynu)** · **[Download the APK](https://github.com/ngzhankang/AttendEase/releases/latest)**
 
 ## Try it
+
+### In your browser
+
+Open the [Appetize demo](https://appetize.io/app/b_wpwek676k67podfwefczyucynu) and press play. It streams the app from an emulator, so there's nothing to install. Browser sessions are short, and the demo can be unavailable for the rest of the month if its free minutes run out.
+
+1. Log in as lecturer `1000001` with password `password`.
+2. Open **Lectures**, expand **50.001 Information Systems**, scroll to today's lesson near the bottom of the list, and tap **Start Attendance**.
+3. Tap **Simulate card tap** and pick a student to see the scan results, or pick an unregistered card to try linking a card.
+
+### On an Android phone
 
 1. Install the APK from the [latest release](https://github.com/ngzhankang/AttendEase/releases/latest) on an Android 7.0+ phone (you may need to allow installs from unknown sources).
 2. Log in with a demo account. Every account uses the password `password`.
