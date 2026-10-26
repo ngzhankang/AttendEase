@@ -109,3 +109,7 @@ keyPassword=...
 ```
 
 Then run `./gradlew assembleRelease`. The APK is written to `app/build/outputs/apk/release/`. Without `keystore.properties` the release build still succeeds but is unsigned. The keystore and properties file are gitignored.
+
+## License
+
+[MIT](LICENSE)
