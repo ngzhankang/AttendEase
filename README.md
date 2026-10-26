@@ -4,7 +4,7 @@ An Android attendance app for SUTD. Students tap their NFC student cards on the 
 
 Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Navigation Component. All data is stored on the device, so no backend or account setup is needed.
 
-**[Download the APK (v1.0)](https://github.com/ngzhankang/AttendEase/releases/latest)**
+**[Download the latest APK](https://github.com/ngzhankang/AttendEase/releases/latest)**
 
 ## Try it
 
@@ -14,11 +14,21 @@ Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Naviga
 | Role | ID |
 |------|----|
 | Lecturer | `1000001` (Dr. Alice Tan), `1000002` (Dr. Bob Lim) |
-| Student | `1006001` (Chen Wei), `1006002` (Priya Sharma) |
+| Student | `1006001` to `1006005` |
 
-The database is seeded on first launch with lecturers, students, three modules (50.001 Information Systems, 50.002 Computation Structures, 50.004 Algorithms), a 16-week term starting 12 January 2026, and some existing attendance records.
+The demo data is generated on first launch around the current date, so the term is always in week 15 and lecturer `1000001` always has a 50.001 lesson today. All names and IDs are fictional.
 
-NFC scanning needs a physical phone with NFC. Everything else works on an emulator.
+### Try NFC attendance with your own card
+
+You need an NFC-enabled phone and any NFC card, such as a transit card, student card or office pass.
+
+1. Log in as lecturer `1000001`, open **Lectures**, expand **50.001 Information Systems** and tap **Start Attendance** on today's lesson.
+2. Tap your card on the back of the phone. It shows **Card Not Recognised** with a **Link this card to a student** button.
+3. Tap the button and pick a student. The card is linked and their attendance is registered.
+4. Tap the card again to see the **Already Registered** state.
+5. End the session, log in as that student, and check their updated attendance.
+
+The card's ID is stored only in the app's local database on your phone. Bank cards and phone wallets show a different ID on every tap, so they can't be linked.
 
 ## Features
 
@@ -41,7 +51,7 @@ When a lecturer starts a session, a full-screen scanner reads each card's UID an
 | Already registered | Amber, student name |
 | Card not recognised | Red, ✗ |
 
-A counter shows how many students have scanned. Opening and closing a session flips the lesson's active flag, which is what shows or hides the live banner on students' phones.
+If an unknown card is scanned, the lecturer can link it to an enrolled student who doesn't have a card yet. A counter shows how many students have scanned. Opening and closing a session flips the lesson's active flag, which is what shows or hides the live banner on students' phones.
 
 ## Architecture
 

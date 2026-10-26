@@ -25,6 +25,8 @@ import com.example.attendease.databinding.ActivityNfcScanBinding;
 import com.example.attendease.util.NfcUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -37,6 +39,7 @@ public class NfcScanActivity extends AppCompatActivity {
     private static final int HOLD_SUCCESS = 3000;
     private static final int HOLD_ALREADY  = 2000;
     private static final int HOLD_FAILED   = 2000;
+    private static final int HOLD_LINKABLE = 8000;   // failed, with the link button showing
 
     private ActivityNfcScanBinding binding;
     private AppDatabase db;
@@ -49,6 +52,11 @@ public class NfcScanActivity extends AppCompatActivity {
 
     /** True while a tag is being processed — prevents re-entrancy. */
     private volatile boolean processingTag = false;
+
+    private final Runnable resetToIdle = () -> {
+        processingTag = false;
+        showIdle();
+    };
 
     private int scannedCount = 0;
     private int enrolledCount = 0;
@@ -132,42 +140,85 @@ public class NfcScanActivity extends AppCompatActivity {
             User user = db.userDao().getUserByLid(uid);
 
             if (user == null) {
+                List<User> unlinked = moduleId != -1L
+                        ? db.userDao().getUnlinkedStudentsForModule(moduleId)
+                        : Collections.emptyList();
                 handler.post(() -> {
                     showFailed();
-                    scheduleReset(HOLD_FAILED);
+                    if (unlinked.isEmpty()) {
+                        scheduleReset(HOLD_FAILED);
+                    } else {
+                        binding.btnLinkCard.setVisibility(View.VISIBLE);
+                        binding.btnLinkCard.setOnClickListener(v -> showLinkCardDialog(uid, unlinked));
+                        scheduleReset(HOLD_LINKABLE);
+                    }
                 });
                 return;
             }
 
-            Attendance existing = db.attendanceDao().getRecord(lessonId, user.studentOrStaffId);
-            if (existing != null) {
-                handler.post(() -> {
-                    showAlreadyRegistered(user.name);
-                    scheduleReset(HOLD_ALREADY);
-                });
-                return;
-            }
+            registerAttendance(user);
+        });
+    }
 
-            // Register attendance
-            Attendance attendance = new Attendance(
-                    lessonId, user.studentOrStaffId, System.currentTimeMillis(), "NFC");
-            db.attendanceDao().insert(attendance);
-            scannedCount++;
-
+    /** Runs on the executor. Shows already-registered or records the attendance. */
+    private void registerAttendance(User user) {
+        Attendance existing = db.attendanceDao().getRecord(lessonId, user.studentOrStaffId);
+        if (existing != null) {
             handler.post(() -> {
-                playSuccessSound();
-                showSuccess(user.name);
-                updateCounter();
-                scheduleReset(HOLD_SUCCESS);
+                showAlreadyRegistered(user.name);
+                scheduleReset(HOLD_ALREADY);
             });
+            return;
+        }
+
+        // Register attendance
+        Attendance attendance = new Attendance(
+                lessonId, user.studentOrStaffId, System.currentTimeMillis(), "NFC");
+        db.attendanceDao().insert(attendance);
+        scannedCount++;
+
+        handler.post(() -> {
+            playSuccessSound();
+            showSuccess(user.name);
+            updateCounter();
+            scheduleReset(HOLD_SUCCESS);
+        });
+    }
+
+    // ── Card linking ─────────────────────────────────────────────────
+
+    /** Lets the lecturer assign an unknown card to an enrolled student without one. */
+    private void showLinkCardDialog(String uid, List<User> unlinked) {
+        handler.removeCallbacks(resetToIdle);   // keep the scanner paused while choosing
+        String[] labels = new String[unlinked.size()];
+        for (int i = 0; i < unlinked.size(); i++) {
+            User u = unlinked.get(i);
+            labels[i] = getString(R.string.link_card_item_format, u.name, u.studentOrStaffId);
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.link_card_title)
+                .setItems(labels, (d, which) -> linkCard(uid, unlinked.get(which)))
+                .setNegativeButton(R.string.cancel, (d, w) -> scheduleReset(0))
+                .setOnCancelListener(d -> scheduleReset(0))
+                .show();
+    }
+
+    private void linkCard(String uid, User student) {
+        binding.btnLinkCard.setVisibility(View.GONE);
+        executor.execute(() -> {
+            // Re-check in case the card was linked while the dialog was open
+            User owner = db.userDao().getUserByLid(uid);
+            if (owner == null) {
+                db.userDao().linkCard(student.studentOrStaffId, uid);
+                owner = student;
+            }
+            registerAttendance(owner);
         });
     }
 
     private void scheduleReset(int delayMs) {
-        handler.postDelayed(() -> {
-            processingTag = false;
-            showIdle();
-        }, delayMs);
+        handler.removeCallbacks(resetToIdle);
+        handler.postDelayed(resetToIdle, delayMs);
     }
 
     // ── Visual states ────────────────────────────────────────────────
@@ -177,6 +228,7 @@ public class NfcScanActivity extends AppCompatActivity {
         binding.tvStateIcon.setText(R.string.nfc_icon_idle);
         binding.tvStateMessage.setText(R.string.nfc_scan_prompt);
         binding.tvStudentName.setVisibility(View.GONE);
+        binding.btnLinkCard.setVisibility(View.GONE);
     }
 
     private void showSuccess(String studentName) {

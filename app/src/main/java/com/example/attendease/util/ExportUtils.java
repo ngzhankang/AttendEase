@@ -17,7 +17,7 @@ public class ExportUtils {
             writer.append("Student ID,Name,Attended,Total Lessons,Percentage\n");
 
             List<StudentAttendanceSummary> list = db.attendanceDao()
-                    .getOverallAttendanceForModule(moduleId).getValue();
+                    .getOverallAttendanceForModuleSync(moduleId);
 
             if (list != null) {
                 for (StudentAttendanceSummary s : list) {

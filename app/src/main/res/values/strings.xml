@@ -130,4 +130,7 @@
     <string name="nfc_msg_failed">Card Not Recognised</string>
     <string name="nfc_unavailable">NFC is not available on this device</string>
     <string name="nfc_disabled">Please enable NFC in Settings</string>
+    <string name="btn_link_card">Link this card to a student</string>
+    <string name="link_card_title">Link card to student</string>
+    <string name="link_card_item_format">%1$s (%2$s)</string>
 </resources>

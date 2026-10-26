@@ -13,6 +13,7 @@ import com.example.attendease.util.Constants;
 import com.example.attendease.util.HashUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -77,48 +78,42 @@ public abstract class AppDatabase extends RoomDatabase {
         long now = System.currentTimeMillis();
 
         // --- Users ---
+        // Fictional demo accounts. Students start with no card linked: the lecturer
+        // links a card by scanning it in NfcScanActivity.
         exec(db,
             "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
             "1000001", "Dr. Alice Tan", pwdHash, Constants.ROLE_LECTURER, null);
         exec(db,
             "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
             "1000002", "Dr. Bob Lim", pwdHash, Constants.ROLE_LECTURER, null);
-        exec(db,
-            "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006001", "Chen Wei", pwdHash, Constants.ROLE_STUDENT, "1188110000101141");
-        exec(db,
-            "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006002", "Priya Sharma", pwdHash, Constants.ROLE_STUDENT, "22AA3B0000201242");
-        exec(db,
-            "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006003", "Marcus Lee", pwdHash, Constants.ROLE_STUDENT, "33BB4C0000301343");
-        exec(db,
-            "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006004", "Aisha Rahman", pwdHash, Constants.ROLE_STUDENT, "44CC5D0000401444");
-        exec(db,
-            "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
-            "1006005", "Daniel Koh", pwdHash, Constants.ROLE_STUDENT, "55DD6E0000501545");
-
+        String[][] students = {
+            {"1006001", "Chen Wei"},
+            {"1006002", "Priya Sharma"},
+            {"1006003", "Marcus Lee"},
+            {"1006004", "Aisha Rahman"},
+            {"1006005", "Daniel Koh"}
+        };
+        for (String[] st : students) {
+            exec(db,
+                "INSERT INTO users (student_or_staff_id,name,password_hash,role,card_lid) VALUES (?,?,?,?,?)",
+                st[0], st[1], pwdHash, Constants.ROLE_STUDENT, null);
+        }
         // --- Modules ---
         exec(db,
             "INSERT INTO modules (module_name,lecturer_id) VALUES (?,?)",
             "50.001 Information Systems", "1000001");
         long moduleId1 = lastInsertRowId(db);
-
         exec(db,
             "INSERT INTO modules (module_name,lecturer_id) VALUES (?,?)",
             "50.002 Computation Structures", "1000001");
         long moduleId2 = lastInsertRowId(db);
-
         exec(db,
             "INSERT INTO modules (module_name,lecturer_id) VALUES (?,?)",
             "50.004 Algorithms", "1000002");
         long moduleId3 = lastInsertRowId(db);
-
         // --- Enrollments ---
         String[] allStudents  = {"1006001","1006002","1006003","1006004","1006005"};
         String[] partStudents = {"1006001","1006002","1006003","1006004"};
-
         for (String sid : allStudents) {
             exec(db, "INSERT INTO enrollments (student_id,module_id) VALUES (?,?)", sid, moduleId1);
             exec(db, "INSERT INTO enrollments (student_id,module_id) VALUES (?,?)", sid, moduleId2);
@@ -126,26 +121,32 @@ public abstract class AppDatabase extends RoomDatabase {
         for (String sid : partStudents) {
             exec(db, "INSERT INTO enrollments (student_id,module_id) VALUES (?,?)", sid, moduleId3);
         }
-
-        // --- Lessons: 48 per module (Mon/Wed/Thu × 16 weeks from 2026-01-12) ---
+        // --- Lessons: 48 per module (3 per week × 16 weeks) ---
+        // The term is anchored to the install date so the demo always looks current:
+        // week 1 starts 14 Mondays before this week, which puts today in week 15,
+        // late enough that the attendance overview shows a spread of colours.
+        Calendar today = Calendar.getInstance();
+        int todayOffset = (today.get(Calendar.DAY_OF_WEEK) + 5) % 7;  // days since Monday
+        Calendar termStart = (Calendar) today.clone();
+        termStart.add(Calendar.DAY_OF_YEAR, -todayOffset - 14 * 7);
+        // 50.001 always has a lesson on install day, so a visitor can start
+        // an attendance session straight away.
+        int[] mod1Days = sortedDays(todayOffset, (todayOffset + 2) % 7, (todayOffset + 4) % 7);
         Object[][] modCfg = {
-            {moduleId1, "10:00", "14:30", "LT1"},
-            {moduleId2, "14:00", "16:00", "LT2"},
-            {moduleId3, "20:45", "10:30", "ESC Lab"}
+            {moduleId1, "10:00", "12:00", "LT1",     mod1Days,             allStudents},
+            {moduleId2, "14:00", "16:00", "LT2",     new int[]{0, 2, 3},  allStudents},  // Mon, Wed, Thu
+            {moduleId3, "09:00", "10:30", "ESC Lab", new int[]{1, 3, 4},  partStudents}  // Tue, Thu, Fri
         };
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        int[] dayOffsets = {0, 2, 3, 6}; // Mon, Wed, Thu relative to week start (Monday)
-
+        String todayStr = sdf.format(today.getTime());
         for (Object[] cfg : modCfg) {
             long modId     = (long)   cfg[0];
             String start   = (String) cfg[1];
             String end     = (String) cfg[2];
             String venue   = (String) cfg[3];
-
-            Calendar weekStart = Calendar.getInstance();
-            weekStart.set(2026, Calendar.JANUARY, 12);
-
+            int[] days     = (int[])  cfg[4];
+            String[] enrolled = (String[]) cfg[5];
+            Calendar weekStart = (Calendar) termStart.clone();
             int lessonNum = 1;
             for (int week = 1; week <= 16; week++) {
                 String type;
@@ -153,8 +154,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 else if (week == 8)  type = Constants.LESSON_TYPE_RECESS;
                 else if (week <= 15) type = Constants.LESSON_TYPE_LECTURE;
                 else                 type = Constants.LESSON_TYPE_EXAM;
-
-                for (int offset : dayOffsets) {
+                for (int offset : days) {
                     Calendar cal = (Calendar) weekStart.clone();
                     cal.add(Calendar.DAY_OF_YEAR, offset);
                     String date = sdf.format(cal.getTime());
@@ -162,27 +162,37 @@ public abstract class AppDatabase extends RoomDatabase {
                         "INSERT INTO lessons (module_id,lesson_number,date,start_time,end_time,venue,type,is_active)" +
                         " VALUES (?,?,?,?,?,?,?,0)",
                         modId, lessonNum, date, start, end, venue, type);
+                    long lessonId = lastInsertRowId(db);
+                    // --- Pre-existing Attendance (demo data) for lessons before today ---
+                    if (date.compareTo(todayStr) < 0 && !Constants.LESSON_TYPE_RECESS.equals(type)) {
+                        seedAttendance(db, lessonId, lessonNum, enrolled, now);
+                    }
                     lessonNum++;
                 }
                 weekStart.add(Calendar.WEEK_OF_YEAR, 1);
             }
         }
+    }
 
-        // --- Pre-existing Attendance (demo data) ---
-        // Lesson IDs: module1 → 1–48, module2 → 49–96, module3 → 97–144
-        // 1006001: attended lessons 1–30 of module1, 49–73 of module2
-        for (long lid = 1; lid <= 30; lid++) {
+    private static int[] sortedDays(int... days) {
+        int[] sorted = days.clone();
+        Arrays.sort(sorted);
+        return sorted;
+    }
+
+    /**
+     * Gives each demo student a different attendance rate so the overview
+     * bars show green, amber and red: they attend roughly 100%, 90%, 75%, 65%
+     * and 50% of past lessons.
+     */
+    private static void seedAttendance(SupportSQLiteDatabase db, long lessonId, int lessonNum,
+                                       String[] studentIds, long timestamp) {
+        int[] missEvery = {0, 10, 4, 3, 2};
+        for (int i = 0; i < studentIds.length; i++) {
+            boolean missed = missEvery[i] > 0 && lessonNum % missEvery[i] == 0;
+            if (missed) continue;
             exec(db, "INSERT OR IGNORE INTO attendance (lesson_id,student_id,timestamp,method) VALUES (?,?,?,?)",
-                lid, "1006001", now, Constants.ATTENDANCE_METHOD_NFC);
-        }
-        for (long lid = 49; lid <= 73; lid++) {
-            exec(db, "INSERT OR IGNORE INTO attendance (lesson_id,student_id,timestamp,method) VALUES (?,?,?,?)",
-                lid, "1006001", now, Constants.ATTENDANCE_METHOD_NFC);
-        }
-        // 1006002: attended lessons 1–38 of module1
-        for (long lid = 1; lid <= 38; lid++) {
-            exec(db, "INSERT OR IGNORE INTO attendance (lesson_id,student_id,timestamp,method) VALUES (?,?,?,?)",
-                lid, "1006002", now, Constants.ATTENDANCE_METHOD_NFC);
+                lessonId, studentIds[i], timestamp, Constants.ATTENDANCE_METHOD_NFC);
         }
     }
 }
