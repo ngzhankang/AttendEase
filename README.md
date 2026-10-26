@@ -6,6 +6,33 @@ Built in **Java** with MVVM, Room, LiveData, ViewBinding and the AndroidX Naviga
 
 **[Try it in your browser](https://appetize.io/app/b_wpwek676k67podfwefczyucynu)** · **[Download the APK](https://github.com/ngzhankang/AttendEase/releases/latest)**
 
+## Screenshots
+
+<!-- Demo video: upload the recording to a GitHub issue or YouTube and replace this comment with the link, e.g.
+**[Watch the demo video](https://...)**, showing a real card being scanned on a phone. -->
+
+### Students
+
+| Home | Calendar | Profile |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/student_home.png" width="220" alt="Student home with the live attendance banner, upcoming lessons and attendance overview"> | <img src="docs/screenshots/student_calendar.png" width="220" alt="Month calendar with lesson dots and today circled"> | <img src="docs/screenshots/student_profile.png" width="220" alt="Student profile with ID, card ID and password options"> |
+| Live banner while a session is open, upcoming lessons and attendance per module | Month view with lesson, exam and recess markers | Student and card IDs, password management |
+
+### Lecturers
+
+| Login | Today's schedule | Lectures |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/login.png" width="220" alt="Login screen with Student and Lecturer toggle"> | <img src="docs/screenshots/lecturer_home.png" width="220" alt="Lecturer home listing today's lessons"> | <img src="docs/screenshots/lecturer_lectures.png" width="220" alt="Module lesson list opened at today's lesson with Start Attendance"> |
+| One login for both roles | Today's lessons at a glance | Opens at today's lesson, ready to start attendance |
+
+### NFC scanner
+
+| Waiting | Registered | Already registered | Not recognised |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/scan_idle.png" width="170" alt="Scanner waiting for a card"> | <img src="docs/screenshots/scan_success.png" width="170" alt="Green screen: Attendance Registered"> | <img src="docs/screenshots/scan_already.png" width="170" alt="Amber screen: Already Registered"> | <img src="docs/screenshots/scan_failed.png" width="170" alt="Red screen: Card Not Recognised with a link button"> |
+
+The scanner shots were taken on an emulator, so they show the **Simulate card tap** button that replaces real NFC there. Phones with NFC don't show it.
+
 ## Try it
 
 ### In your browser
